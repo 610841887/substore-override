@@ -15,10 +15,15 @@
 ## 使用
 
 1. 在 Sub-Store 中新建 Mihomo 配置，来源选择单条订阅或组合订阅。
-2. 添加 JavaScript 覆写并粘贴 `substore-mihomo-override.js`。
+2. 添加 JavaScript 覆写，粘贴脚本内容或填写公开仓库的 Raw 链接。
 3. 在 Mihomo 客户端导入 Sub-Store 生成的配置链接。
-4. 如需关闭严格 WebRTC 拦截，把 `BLOCK_WEBRTC` 改为 `false`。
+4. 默认开启严格 WebRTC 拦截；在脚本链接末尾添加 `#blockWebrtc=false` 可关闭：
+
+   `https://raw.githubusercontent.com/610841887/substore-override/main/substore-mihomo-override.js#blockWebrtc=false`
+
 5. 如需增加直连域名，在 `CUSTOM_DIRECT_RULES` 中添加 Mihomo 规则。
+
+`blockWebrtc` 同时接受 `false`、`0`、`no` 或 `off`；不传参数时保持开启。
 
 ## 注意
 
