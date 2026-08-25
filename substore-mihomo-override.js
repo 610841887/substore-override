@@ -1,10 +1,16 @@
 // Sub-Store -> 文件 -> Mihomo 配置 -> 覆写脚本
-// 默认拦截；脚本链接加 #blockWebrtc=false 可关闭。
-const WEBRTC_ARG =
-  typeof $arguments === "object" && $arguments ? $arguments.blockWebrtc : undefined;
-const BLOCK_WEBRTC = !["false", "0", "no", "off"].includes(
-  String(WEBRTC_ARG).toLowerCase(),
-);
+// 参数示例：#blockWebrtc=false&pixiv=true
+const SCRIPT_ARGS = typeof $arguments === "object" && $arguments ? $arguments : {};
+
+function booleanArg(name, fallback) {
+  const value = String(SCRIPT_ARGS[name] ?? "").toLowerCase();
+  if (["true", "1", "yes", "on"].includes(value)) return true;
+  if (["false", "0", "no", "off"].includes(value)) return false;
+  return fallback;
+}
+
+const BLOCK_WEBRTC = booleanArg("blockWebrtc", true);
+const PIXIV_ENABLED = booleanArg("pixiv", false);
 
 // 在这里追加必须直连的规则，例如："DOMAIN-SUFFIX,example.com,DIRECT"
 const CUSTOM_DIRECT_RULES = [];
@@ -15,6 +21,7 @@ const GROUP = {
   AI: "🤖 AI",
   TELEGRAM: "✈️ Telegram",
   GAME: "🎮 游戏平台",
+  PIXIV: "🎨 Pixiv",
   ABROAD: "🌍 海外流量",
   FINAL: "🐟 MATCH 兜底",
 };
@@ -104,6 +111,7 @@ function main(config) {
     selectGroup(GROUP.AI, [GROUP.SELECT, GROUP.AUTO]),
     selectGroup(GROUP.TELEGRAM, [GROUP.SELECT, GROUP.AUTO]),
     selectGroup(GROUP.GAME, [GROUP.SELECT, GROUP.AUTO]),
+    ...(PIXIV_ENABLED ? [selectGroup(GROUP.PIXIV, [GROUP.SELECT, GROUP.AUTO])] : []),
     selectGroup(GROUP.ABROAD, [GROUP.SELECT, GROUP.AUTO]),
     selectGroup(GROUP.FINAL, [GROUP.ABROAD, GROUP.SELECT]),
   ];
@@ -126,6 +134,7 @@ function main(config) {
     "GEOSITE,category-games@cn,DIRECT",
     "GEOSITE,category-games-cn,DIRECT",
     `GEOSITE,category-games-!cn,${GROUP.GAME}`,
+    ...(PIXIV_ENABLED ? [`GEOSITE,pixiv,${GROUP.PIXIV}`] : []),
     "GEOSITE,apple,DIRECT",
     "GEOSITE,microsoft,DIRECT",
     "GEOSITE,onedrive,DIRECT",
