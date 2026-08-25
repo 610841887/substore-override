@@ -1,6 +1,10 @@
 // Sub-Store -> 文件 -> Mihomo 配置 -> 覆写脚本
-// true 会拦截常见 STUN 与标准端口，可能导致语音、视频通话不可用。
-const BLOCK_WEBRTC = true;
+// 默认拦截；脚本链接加 #blockWebrtc=false 可关闭。
+const WEBRTC_ARG =
+  typeof $arguments === "object" && $arguments ? $arguments.blockWebrtc : undefined;
+const BLOCK_WEBRTC = !["false", "0", "no", "off"].includes(
+  String(WEBRTC_ARG).toLowerCase(),
+);
 
 // 在这里追加必须直连的规则，例如："DOMAIN-SUFFIX,example.com,DIRECT"
 const CUSTOM_DIRECT_RULES = [];
