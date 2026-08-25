@@ -6,6 +6,7 @@
 
 - 局域网、Apple、Microsoft、OneDrive 和 SSH 22 端口直连
 - AI、Telegram、游戏平台独立分流
+- Pixiv 可选独立分流，默认关闭
 - 中国游戏/CDN 直连，海外游戏平台走代理
 - 中国大陆直连，海外流量及 MATCH 兜底走代理
 - Fake-IP、加密 DNS、DNS 劫持和严格 TUN
@@ -17,13 +18,19 @@
 1. 在 Sub-Store 中新建 Mihomo 配置，来源选择单条订阅或组合订阅。
 2. 添加 JavaScript 覆写，粘贴脚本内容或填写公开仓库的 Raw 链接。
 3. 在 Mihomo 客户端导入 Sub-Store 生成的配置链接。
-4. 默认开启严格 WebRTC 拦截；在脚本链接末尾添加 `#blockWebrtc=false` 可关闭：
+4. 如需增加直连域名，在 `CUSTOM_DIRECT_RULES` 中添加 Mihomo 规则。
 
-   `https://raw.githubusercontent.com/610841887/substore-override/main/substore-mihomo-override.js#blockWebrtc=false`
+## URL 参数
 
-5. 如需增加直连域名，在 `CUSTOM_DIRECT_RULES` 中添加 Mihomo 规则。
+默认开启严格 WebRTC 拦截、关闭 Pixiv 独立分流。
 
-`blockWebrtc` 同时接受 `false`、`0`、`no` 或 `off`；不传参数时保持开启。
+- `#pixiv=true`：新增 `🎨 Pixiv` 策略组并启用 Pixiv 分流。
+- `#blockWebrtc=false`：关闭严格 WebRTC 拦截。
+- 多参数使用 `&` 连接：
+
+  `https://raw.githubusercontent.com/610841887/substore-override/main/substore-mihomo-override.js#pixiv=true&blockWebrtc=false`
+
+布尔值支持 `true/1/yes/on` 和 `false/0/no/off`；非法值使用默认设置。
 
 ## 注意
 
