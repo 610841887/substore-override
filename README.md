@@ -5,7 +5,8 @@
 ## 功能
 
 - 局域网、Apple、Microsoft、OneDrive 和 SSH 22 端口直连
-- AI、Telegram、游戏平台独立分流
+- AI、Telegram、Google、游戏平台独立分流
+- Google API 优先走代理，避免 `googleapis.cn` 被中国规则直连
 - Pixiv 可选独立分流，默认关闭
 - 中国游戏/CDN 直连，海外游戏平台走代理
 - 中国大陆直连，海外流量及 MATCH 兜底走代理
