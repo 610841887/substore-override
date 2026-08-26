@@ -46,7 +46,7 @@
 2. 在“配置”页通过上面的链接下载配置并选中它。
 3. 将首页“全局路由”设为“配置”。
 
-配置不要求订阅名称。每个服务分组会直接列出 Shadowrocket 已有节点，可以分别选择；默认 `PROXY` 跟随首页当前节点。它包含独立的 AI、Telegram、Google、游戏平台分组；Apple、Microsoft、腾讯、SSH 22、局域网和中国大陆直连，漏网国内域名再按中国 IP 判断；YouTube 随海外流量走代理；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
+配置不要求订阅名称。每个服务分组会直接列出 Shadowrocket 已有节点，可以分别选择；默认 `PROXY` 跟随首页当前节点。它包含独立的 AI、Telegram、Google、游戏平台分组；Apple、Microsoft、腾讯、SSH 22、局域网和中国大陆直连；中国域名通过完整 DOMAIN-SET 匹配，GEOIP 仅处理已经是 IP 的请求，避免海外域名为 GEOIP 判断触发本地 DNS；YouTube 随海外流量走代理；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
 
 Shadowrocket 配置是静态文件，不解析 URL 的 `#pixiv=true` 参数：
 
@@ -55,6 +55,7 @@ Shadowrocket 配置是静态文件，不解析 URL 的 `#pixiv=true` 参数：
 
 ## 注意
 
+- `GEOIP,CN` 必须保留 `no-resolve`，否则未命中的海外域名会先触发本地 DNS 查询。
 - 两份配置默认关闭 IPv6，减少 IPv6 绕行风险。
 - 浏览器自身的 ICE 行为无法只靠规则配置完全控制。
 - 游戏中国 CDN 依赖规则集分类；漏网域名需要手动补充。
