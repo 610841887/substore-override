@@ -46,7 +46,7 @@
 2. 在“配置”页通过上面的链接下载配置并选中它。
 3. 将首页“全局路由”设为“配置”。
 
-配置会自动使用 Shadowrocket 已有节点，不要求订阅名称。它包含独立的 AI、Telegram、Google、游戏平台分组；Apple、Microsoft、SSH 22、局域网和中国大陆直连；YouTube 随海外流量走代理；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
+配置不要求订阅名称。每个服务分组会直接列出 Shadowrocket 已有节点，可以分别选择；默认 `PROXY` 跟随首页当前节点。它包含独立的 AI、Telegram、Google、游戏平台分组；Apple、Microsoft、SSH 22、局域网和中国大陆直连；YouTube 随海外流量走代理；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
 
 Shadowrocket 配置是静态文件，不解析 URL 的 `#pixiv=true` 参数：
 
