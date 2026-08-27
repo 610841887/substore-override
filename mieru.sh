@@ -177,9 +177,10 @@ public_ipv4() {
 }
 
 install_server() {
-  local port username password config_file client_file server_ip status attempt
+  local port username password config_file client_file mihomo_file server_ip status attempt
   local traffic_choice traffic_seed="" server_traffic_pattern="" client_traffic_pattern=""
-  local traffic_pattern_value="" traffic_pattern_output traffic_pattern_enabled=0
+  local traffic_pattern_value="" traffic_pattern_output mihomo_traffic_pattern=""
+  local traffic_pattern_enabled=0
 
   [[ $# -eq 0 ]] || die "install 不接受其他参数"
   ensure_root install
@@ -244,6 +245,8 @@ EOF
     [[ "$traffic_pattern_value" =~ ^[A-Za-z0-9+/]+={0,2}$ ]] || \
       die "mita 返回了无效的流量特征"
     traffic_pattern_output="  流量特征：$traffic_pattern_value"
+    printf -v mihomo_traffic_pattern '    traffic-pattern: "%s"\n' \
+      "$traffic_pattern_value"
   else
     traffic_pattern_output="  流量特征：未启用（客户端留空）"
   fi
@@ -275,6 +278,22 @@ EOF
 EOF
   )
 
+  mihomo_file="/etc/mita/generated-mihomo.yaml"
+  (umask 077; cat >"$mihomo_file" <<EOF
+proxies:
+  - name: "Mieru-$server_ip"
+    type: mieru
+    server: "$server_ip"
+    port: $port
+    transport: TCP
+    username: "$username"
+    password: "$password"
+    multiplexing: MULTIPLEXING_HIGH
+    handshake-mode: HANDSHAKE_STANDARD
+${mihomo_traffic_pattern}
+EOF
+  )
+
   cat <<EOF
 
 安装成功，节点信息：
@@ -285,10 +304,13 @@ EOF
   密码：$password
 $traffic_pattern_output
   客户端配置：$client_file
+  Mihomo 订阅文件：$mihomo_file
 
 请放行服务器安全组/防火墙 TCP $port。
 使用前置中转时，客户端的地址和端口改为最前端入口，账号密码不变。
 EOF
+  printf '\nMihomo 节点 YAML（可直接导入或作为代理提供者内容）：\n'
+  cat "$mihomo_file"
 }
 
 find_socket_proxyd() {

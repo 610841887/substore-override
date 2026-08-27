@@ -27,4 +27,6 @@ seed="$(random_seed)"
 [[ "$("$script" --help)" == *"打开交互菜单"* ]]
 [[ "$(printf '0\n' | "$script")" == *"已退出"* ]]
 ! "$script" relay 40000 999.1.1.1 25000 >/dev/null 2>&1
+grep -q 'generated-mihomo.yaml' "$script"
+grep -q 'type: mieru' "$script"
 printf 'mieru.sh: ok\n'
