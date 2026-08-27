@@ -71,6 +71,21 @@ random_hex() {
   od -An -N"$bytes" -tx1 /dev/urandom | tr -d ' \n'
 }
 
+random_seed() {
+  local number
+
+  read -r number < <(od -An -N4 -tu4 /dev/urandom)
+  printf '%s\n' "$((number % 2147483647 + 1))"
+}
+
+answer_yes() {
+  case "${1:-}" in
+    ""|y|Y|yes|Yes|YES) return 0 ;;
+    n|N|no|No|NO) return 1 ;;
+    *) die "请输入 y 或 n" ;;
+  esac
+}
+
 port_in_use() {
   command -v ss >/dev/null || return 1
   ss -H -ltn "sport = :$1" 2>/dev/null | grep -q .
@@ -163,6 +178,8 @@ public_ipv4() {
 
 install_server() {
   local port username password config_file client_file server_ip status attempt
+  local traffic_choice traffic_seed="" server_traffic_pattern="" client_traffic_pattern=""
+  local traffic_pattern_value="" traffic_pattern_output traffic_pattern_enabled=0
 
   [[ $# -eq 0 ]] || die "install 不接受其他参数"
   ensure_root install
@@ -184,6 +201,16 @@ install_server() {
   password="${password:-$(random_hex 12)}"
   valid_credential "$password" || die "密码仅允许 1-64 位字母、数字、点、下划线和连字符"
 
+  read -r -p "启用保守随机流量特征（可能增加延迟和流量）？[Y/n]：" traffic_choice
+  if answer_yes "$traffic_choice"; then
+    traffic_pattern_enabled=1
+    traffic_seed="$(random_seed)"
+    printf -v server_traffic_pattern \
+      '"trafficPattern": {"seed": %s, "unlockAll": false},\n  ' "$traffic_seed"
+    printf -v client_traffic_pattern \
+      '"trafficPattern": {"seed": %s, "unlockAll": false},\n    ' "$traffic_seed"
+  fi
+
   install_package
   command -v mita >/dev/null || die "mita 安装后仍不可用"
   systemctl restart mita
@@ -201,7 +228,7 @@ install_server() {
 {
   "portBindings": [{"port": $port, "protocol": "TCP"}],
   "users": [{"name": "$username", "password": "$password"}],
-  "loggingLevel": "INFO",
+  ${server_traffic_pattern}"loggingLevel": "INFO",
   "mtu": 1400
 }
 EOF
@@ -211,6 +238,15 @@ EOF
   sleep 1
   status="$(mita status)"
   [[ "$status" == *'"RUNNING"'* ]] || die "mita 未进入 RUNNING 状态：$status"
+
+  if ((traffic_pattern_enabled)); then
+    traffic_pattern_value="$(mita export traffic-pattern)" || die "导出流量特征失败"
+    [[ "$traffic_pattern_value" =~ ^[A-Za-z0-9+/]+={0,2}$ ]] || \
+      die "mita 返回了无效的流量特征"
+    traffic_pattern_output="  流量特征：$traffic_pattern_value"
+  else
+    traffic_pattern_output="  流量特征：未启用（客户端留空）"
+  fi
 
   server_ip="$(public_ipv4 || true)"
   server_ip="${server_ip:-<服务器公网IPv4>}"
@@ -224,7 +260,7 @@ EOF
       "ipAddress": "$server_ip",
       "portBindings": [{"port": $port, "protocol": "TCP"}]
     }],
-    "mtu": 1400,
+    ${client_traffic_pattern}"mtu": 1400,
     "multiplexing": {"level": "MULTIPLEXING_HIGH"},
     "handshakeMode": "HANDSHAKE_STANDARD"
   }],
@@ -247,6 +283,7 @@ EOF
   协议：TCP
   用户名：$username
   密码：$password
+$traffic_pattern_output
   客户端配置：$client_file
 
 请放行服务器安全组/防火墙 TCP $port。
