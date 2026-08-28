@@ -46,7 +46,7 @@
 2. 在“配置”页通过上面的链接下载配置并选中它。
 3. 将首页“全局路由”设为“配置”。
 
-配置不要求订阅名称，也不定义任何代理分组。中国域名/IP、SSH 22 和局域网直连，其余流量由 `FINAL,PROXY` 直接交给 Shadowrocket 首页当前选中的节点；切换海外节点只需在首页操作。中国域名通过完整 DOMAIN-SET 匹配，GEOIP 仅处理已经是 IP 的请求，避免海外域名为 GEOIP 判断触发本地 DNS；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
+配置不要求订阅名称，也不定义任何代理分组。macOS 上的 Motrix（包括内置 `aria2c`）、中国域名/IP、SSH 22 和局域网直连，其余流量由 `FINAL,PROXY` 直接交给 Shadowrocket 首页当前选中的节点；切换海外节点只需在首页操作。Motrix 规则按应用进程路径匹配，不影响单独安装的其他 `aria2c`。中国域名通过完整 DOMAIN-SET 匹配，GEOIP 仅处理已经是 IP 的请求，避免海外域名为 GEOIP 判断触发本地 DNS；加密 DNS、DNS 劫持和 STUN 假地址用于降低 DNS/WebRTC 泄露风险。
 
 Shadowrocket 配置是静态文件，不解析 URL 参数。如需关闭 WebRTC 防泄露，注释 `stun-response-ip` 和 `stun-response-ipv6` 两行。
 
@@ -54,4 +54,5 @@ Shadowrocket 配置是静态文件，不解析 URL 参数。如需关闭 WebRTC 
 
 - `GEOIP,CN` 必须保留 `no-resolve`，否则未命中的海外域名会先触发本地 DNS 查询。
 - 两份配置默认关闭 IPv6，减少 IPv6 绕行风险。
+- Motrix 的 `DIRECT` 表示不经过代理节点，但请求仍由 Shadowrocket TUN 接管并执行规则判断。
 - 浏览器自身的 ICE 行为无法只靠规则配置完全控制。
