@@ -15,6 +15,33 @@ const PIXIV_ENABLED = booleanArg("pixiv", false);
 // 在这里追加必须直连的规则，例如："DOMAIN-SUFFIX,example.com,DIRECT"
 const CUSTOM_DIRECT_RULES = [];
 
+const DOUYIN_RULE_PROVIDERS = {
+  "douyin-ip-media": {
+    type: "inline",
+    behavior: "classical",
+    payload: [
+      "DOMAIN-SUFFIX,douyincdn.com",
+      "DOMAIN-SUFFIX,douyinliving.com",
+      "DOMAIN-SUFFIX,douyinvod.com",
+      "DOMAIN-SUFFIX,douyinpic.com",
+      "DOMAIN-SUFFIX,bytegecko.com",
+      "DOMAIN-SUFFIX,byteeffecttos.com",
+      "DOMAIN-SUFFIX,byteimg.com",
+      "DOMAIN-SUFFIX,ecombdimg.com",
+      "DOMAIN-SUFFIX,bytehwm.com",
+      "DOMAIN-SUFFIX,bytecdn.com",
+      "DOMAIN-SUFFIX,zjcdn.com",
+      "DOMAIN-KEYWORD,awememusicpgc",
+      "DOMAIN,v9-awememusicpgc.amemv.com",
+    ],
+  },
+  "douyin-ip-api": {
+    type: "inline",
+    behavior: "classical",
+    payload: ["DOMAIN-SUFFIX,snssdk.com", "DOMAIN-SUFFIX,amemv.com"],
+  },
+};
+
 const GROUP = {
   SELECT: "🚀 节点选择",
   AUTO: "♻️ 自动选择",
@@ -98,6 +125,11 @@ function main(config) {
     "direct-nameserver-follow-policy": true,
   };
 
+  config["rule-providers"] = {
+    ...(config["rule-providers"] || {}),
+    ...DOUYIN_RULE_PROVIDERS,
+  };
+
   config["proxy-groups"] = [
     selectGroup(GROUP.SELECT, [GROUP.AUTO]),
     {
@@ -131,6 +163,9 @@ function main(config) {
     "GEOSITE,private,DIRECT",
     "GEOIP,private,DIRECT,no-resolve",
     ...rtcRules,
+    // 抖音属地接口跟随首页节点，视频/图片/直播 CDN 直连。
+    "RULE-SET,douyin-ip-media,DIRECT",
+    `RULE-SET,douyin-ip-api,${GROUP.SELECT}`,
     // ponytail: GEO 分类只能近似识别中国下载 CDN；漏网域名可追加到 CUSTOM_DIRECT_RULES。
     "GEOSITE,steam@cn,DIRECT",
     "GEOSITE,category-games@cn,DIRECT",
