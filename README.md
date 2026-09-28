@@ -1,5 +1,7 @@
 # Sub-Store Mihomo 覆写 / Shadowrocket 配置
 
+服务器端脚本预览版见 [VLESS / REALITY 防护说明](server/README.md)，与下列客户端配置独立。
+
 本仓库提供两个彼此独立的配置：
 
 - `substore-mihomo-override.js`：供 Sub-Store 处理 Mihomo 配置。
