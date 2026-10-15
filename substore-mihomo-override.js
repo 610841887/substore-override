@@ -173,6 +173,8 @@ function main(config) {
     `GEOSITE,category-games-!cn,${GROUP.GAME}`,
     ...(PIXIV_ENABLED ? [`GEOSITE,pixiv,${GROUP.PIXIV}`] : []),
     "GEOSITE,apple,DIRECT",
+    // Microsoft 分类包含 GitHub，需先匹配代理例外。
+    `GEOSITE,github,${GROUP.ABROAD}`,
     "GEOSITE,microsoft,DIRECT",
     "GEOSITE,onedrive,DIRECT",
     `GEOSITE,category-ai-!cn,${GROUP.AI}`,
